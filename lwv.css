@@ -68,10 +68,6 @@ h1 {
   cursor: pointer;
 }
 
-p {
-  font-size: .75em;
-}
-
 .footer {
   position: absolute;
   right: 0;
