@@ -1,28 +1,60 @@
-function geoFindMe() {
-  var output = document.getElementById("out");
+const loc = document.getElementById("location");
+const temNum = document.getElementById("temperature-num");
+const temScale = document.getElementById("temperature-scale");
+const weatherCon = document.getElementById("weather-condition");
+const weatherIcon = document.getElementById("weather-icon");
 
-  if (!navigator.geolocation){
-    output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
-    return;
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+      getWeather(position.coords.latitude, position.coords.longitude);
+    });
+  } else {
+    loc.innerHTML = "Geolocation is not supported by this browser.";
   }
-
-  function success(position) {
-    var latitude  = position.coords.latitude;
-    var longitude = position.coords.longitude;
-
-    output.innerHTML = '<p>Latitude is ' + latitude + '° <br>Longitude is ' + longitude + '°</p>';
-
-    var img = new Image();
-    img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=13&size=300x300&sensor=false";
-
-    output.appendChild(img);
-  }
-
-  function error() {
-    output.innerHTML = "Unable to retrieve your location";
-  }
-
-  output.innerHTML = "<p>Locating…</p>";
-
-  navigator.geolocation.getCurrentPosition(success, error);
 }
+
+function getWeather(lat, long) {
+  const root = "https://fcc-weather-api.glitch.me/api/current?";
+  fetch(`${root}lat=${lat}&lon=${long}`, { method: "get" })
+    .then(resp => resp.json())
+    .then(data => {
+      updateDataToUI(data.name, data.weather, data.main.temp);
+    })
+    .catch(function(err) {
+      console.error(err);
+    });
+}
+
+function updateDataToUI(location, weather, temp) {
+  weatherIcon.innerHTML = `<img src="${weather[0].icon}" />`;
+  weatherCon.innerHTML = weather[0].main;
+  loc.innerHTML = location;
+  temNum.innerHTML = `${temp}`;
+}
+
+function cToF(celsius) {
+  return celsius * 9 / 5 + 32;
+}
+
+function fToC(fahrenheit) {
+  return (fahrenheit - 32) * 5 / 9;
+}
+
+function toggleScale() {
+  if (temScale.innerHTML === "C") {
+    temNum.innerHTML = cToF(temNum.innerHTML).toFixed(2);
+    temScale.innerHTML = "F";
+  } else if (temScale.innerHTML === 'F') {
+    temNum.innerHTML = fToC(temNum.innerHTML).toFixed(2);
+    temScale.innerHTML = "C";
+  }
+}
+
+temScale.addEventListener("click", toggleScale);
+
+
+window.onload = function() {
+  getLocation();
+};
+
