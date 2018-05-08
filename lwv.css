@@ -53,6 +53,21 @@ h1 {
 	color: #333;
 }
 
+#weather-icon {
+  height: 70px;
+  width: 70px;
+  display: inline;
+}
+
+#temperature {
+  text-shadow: 0 0 5px #333;
+}
+
+#temperature:hover {
+  color: white;
+  cursor: pointer;
+}
+
 button, img {
   background-size: 100%;
   width: 40px;
